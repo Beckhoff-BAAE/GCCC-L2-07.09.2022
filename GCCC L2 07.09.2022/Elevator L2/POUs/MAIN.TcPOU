@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{102166ba-9c0f-48e5-baec-6e460cabbb86}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	CallButtons:ARRAY[1..numFloor]OF BOOL;
+	Floor:ARRAY[1..numFloor]OF ST_Floor;
+	Elevator:FB_Motor;
+	PrgState:UINT;
+	current: INT;
+	requested: INT;
+	i: INT;
+	Rise:ARRAY[1..numFloor] OF R_TRIG;
+END_VAR
+VAR CONSTANT
+	numFloor:UINT:=6;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE	PrgState	OF
+	0://stopped
+		IF	current<requested	THEN
+			PrgState:=20;//change state to moveing up
+			Elevator.MoveUP();
+		ELSIF current>requested	THEN
+			PrgState:=30;//change state to moveing down
+			Elevator.MoveDown();
+		ELSE
+			PrgState:=10;//poll for inputs
+		END_IF
+	10://poll input
+		FOR	i:=1	TO	numFloor	DO
+			IF	CallButtons[i]	THEN
+				requested:=i;
+				EXIT;
+			END_IF
+		END_FOR
+		PrgState:=0;
+	20://moveing up
+		FOR i:=1	TO	numFloor	DO
+			Rise[i](CLK:= Floor[i].Low,);
+			IF	Rise[i].Q	THEN
+				current:=current+1;
+				IF	current=requested	THEN
+					PrgState:=40;
+				ELSE
+					CONTINUE;
+				END_IF
+			ELSE
+				CONTINUE;
+			END_IF
+		END_FOR
+	30://moving down
+		FOR i:=1	TO	numFloor	DO
+			Rise[i](CLK:= Floor[i].High,);
+			IF	Rise[i].Q	THEN
+				current:=current-1;
+				IF	current=requested	THEN
+					PrgState:=40;
+				ELSE
+					CONTINUE;
+				END_IF
+			ELSE
+				CONTINUE;
+			END_IF
+		END_FOR
+	40://slowdown
+		Elevator.SlowDown();
+		FOR i:=1	TO	numFloor	DO
+			IF	Floor[i].Mid	THEN
+				Elevator.Stop();
+				EXIT;
+			END_IF
+		END_FOR
+		IF	elevator.IsStopped()	THEN
+			PrgState:=0;
+		END_IF
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="2" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="23" Count="1" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="38" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="52" Count="1" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="58" Count="5" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="67" Count="3" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="73" Count="1" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="80" Count="2" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

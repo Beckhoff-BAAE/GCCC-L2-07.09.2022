@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FB_Motor" Id="{8ff14de2-fa53-40ce-8077-ab71ae680e4b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Motor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//movingup,
+//	moving down
+//stopped
+// slow bit
+	InternalState:E_MotorStates;
+	slow:BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="isSlow" Id="{f8e84004-ca07-4d7d-8810-55ac664ca33c}">
+      <Declaration><![CDATA[METHOD isSlow : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[isSlow:=slow;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsStopped" Id="{a514c7b1-b3f2-467f-8eb2-ed079e48023e}">
+      <Declaration><![CDATA[METHOD IsStopped : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsStopped:=FALSE;
+IF	InternalState=E_MotorStates.stopped	THEN
+	IsStopped:=TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveDown" Id="{51a3ce90-3c02-452f-891c-e66e6e19f2c5}">
+      <Declaration><![CDATA[METHOD MoveDown : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[InternalState:=E_MotorStates.movingdown;
+slow:=false;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="MoveUP" Id="{01223b80-be72-4c65-92ef-96f3c0a2a308}">
+      <Declaration><![CDATA[METHOD MoveUP : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[InternalState:=E_MotorStates.movingup;
+slow:=false;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SlowDown" Id="{6d3edecb-0ee9-4c9c-a05b-66a40cdfccc9}">
+      <Declaration><![CDATA[METHOD SlowDown : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[slow:=true;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Stop" Id="{0dc6ec37-c855-409f-89e7-bd228e45bf11}">
+      <Declaration><![CDATA[METHOD Stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[slow:=FALSE;
+InternalState:=E_MotorStates.stopped;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_Motor">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Motor.isSlow">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Motor.IsStopped">
+      <LineId Id="8" Count="0" />
+      <LineId Id="5" Count="2" />
+    </LineIds>
+    <LineIds Name="FB_Motor.MoveDown">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="FB_Motor.MoveUP">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="FB_Motor.SlowDown">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_Motor.Stop">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
